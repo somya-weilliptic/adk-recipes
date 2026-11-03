@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.weilliptic.examples</groupId>
+  <artifactId>weil-agent-to-agent-basic</artifactId>
+  <version>1.0</version>
+  <description>A root agent that rolls dice locally and asks the remote prime agent (`a2a_server`) over A2A which rolls are prime, with a Weil wallet identity: steps audited on chain and tools gated by on-chain permissions.</description>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- The Weil wallet SDK, from Maven Central once it is published there. -->
+    <weil-wallet.version>1.0.0-SNAPSHOT</weil-wallet.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.weilliptic</groupId>
+      <artifactId>weil-wallet</artifactId>
+      <version>${weil-wallet.version}</version>
+    </dependency>
+  </dependencies>
+</project>

@@ -1,0 +1,28 @@
+# a2a_server and this dice agent in two containers. Each reads its own .env,
+# so each has its own wallet: fill in ../weil-agent-to-agent-server/.env and ./.env first.
+#
+#   docker compose up -d --build prime
+#   docker compose run --rm --build dice
+
+services:
+  prime:
+    build: ../weil-agent-to-agent-server
+    image: weil-a2a-server
+    env_file: ../weil-agent-to-agent-server/.env
+    environment:
+      PORT: "8003"
+      WEIL_A2A_PUBLIC_URL: http://prime:8003/
+
+  dice:
+    build: .
+    image: weil-a2a-basic
+    env_file: .env
+    environment:
+      PRIME_URL: http://prime:8003
+    # A terminal chat: run it with `docker compose run --rm dice`.
+    stdin_open: true
+    tty: true
+    depends_on:
+      - prime
+    profiles:
+      - chat

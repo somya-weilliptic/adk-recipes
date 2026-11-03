@@ -1,0 +1,33 @@
+type: "standalone"    # Options: [standalone | module]
+status: "active"      # Options: [active | inactive]
+language: "java"      # Options: [python | java | go | kotlin | typescript]
+deployable: true
+description: "An agent with a large, fixed reference prompt, cached by the model provider so later turns are cheaper and faster, with a Weil wallet identity: steps audited on chain and tools gated by on-chain permissions."
+
+architecture:
+  agent: "single"       # Options: [single | multi]
+  stateful: false       # Options: [true | false]
+  datasources:         # Options: [hardcoded | local | external]
+    - "hardcoded"
+
+dependencies:
+  libraries:
+    - "ADK"
+    - "Weil Wallet SDK"
+  services:
+    - "Weilliptic Sentinel"
+    - "Anthropic API"
+    - "OpenAI API"
+
+ownership:
+  team: "weilliptic"
+  poc: "FILL-IN-GITHUB-HANDLE"
+
+tags:
+  - "weilliptic"
+  - "audit"
+  - "permissions"
+  - "context-caching"
+  - "cost"
+
+license: "Apache-2.0"

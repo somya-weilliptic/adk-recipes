@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.weilliptic.examples</groupId>
+  <artifactId>weil-spring-chat</artifactId>
+  <version>1.0</version>
+  <description>A Spring Boot app serving a simple chat page backed by an ADK agent, with a Weil wallet identity: steps audited on chain and tools gated by on-chain permissions.</description>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <adk.version>1.11.0</adk.version>
+    <!-- The Weil wallet SDK, from Maven Central once it is published there. -->
+    <weil-wallet.version>1.0.0-SNAPSHOT</weil-wallet.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.weilliptic</groupId>
+      <artifactId>weil-wallet</artifactId>
+      <version>${weil-wallet.version}</version>
+    </dependency>
+    <!-- Spring Boot, for the chat app. -->
+    <dependency>
+      <groupId>com.google.adk</groupId>
+      <artifactId>google-adk-dev</artifactId>
+      <version>${adk.version}</version>
+    </dependency>
+    <!--
+      Pinned ahead of the 1.7.32 that bitcoinj pulls in: Spring Boot's Logback
+      binds to the slf4j 2 API and refuses to start with 1.7 on the classpath.
+    -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.17</version>
+    </dependency>
+    <!--
+      Pinned ahead of the SDK's 2.16.1: Spring Boot brings jackson-annotations
+      2.20, which calls databind methods 2.16 does not have.
+    -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.20.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.20.2</version>
+    </dependency>
+  </dependencies>
+</project>
