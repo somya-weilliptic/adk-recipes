@@ -1,0 +1,14 @@
+# Shared by every per-project Dockerfile (build context = this directory).
+.git
+.venv
+**/.env
+**/.env.*
+**/__pycache__
+**/*.py[cod]
+**/.adk
+**/*.db
+**/Dockerfile
+**/.env.example
+.pytest_cache
+.ruff_cache
+.gitkeep
