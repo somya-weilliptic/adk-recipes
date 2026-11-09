@@ -18,6 +18,8 @@ from google.adk.apps import App
 from google.adk.models.lite_llm import LiteLlm
 from pydantic import BaseModel, Field
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY, WEIL_SERVICE
+
 
 class UserPreferences(BaseModel):
     budget: int = Field(description="The user's maximum budget in USD")
@@ -40,7 +42,7 @@ class PhoneRecommendation(BaseModel):
     reason: str
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def check_phone_price(model_name: str) -> float:
     """Mock tool to check the current price of a Pixel phone model."""
     prices = {
@@ -59,7 +61,7 @@ def check_phone_price(model_name: str) -> float:
 
 phone_recommender = Agent(
     name="phone_recommender",
-    model=LiteLlm(model="openai/gpt-4o"),
+    model=LiteLlm(model=AGENT_MODEL),
     mode="single_turn",
     input_schema=UserPreferences,
     output_schema=PhoneRecommendation,
@@ -76,11 +78,11 @@ Only recommend these phones: Pixel 10a, Pixel 10, Pixel 10 Pro, Pixel 10 Pro XL,
 )
 
 
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="root_agent",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         sub_agents=[phone_recommender],
         instruction=(
             """\

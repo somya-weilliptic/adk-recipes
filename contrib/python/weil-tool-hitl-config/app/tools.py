@@ -17,8 +17,10 @@ from typing import Any
 import weil_ai
 from google.adk.tools.tool_context import ToolContext
 
+from app.config import WEIL_SERVICE
 
-@weil_ai.secured_user("engg.acme")
+
+@weil_ai.secured_user(WEIL_SERVICE)
 def reimburse(purpose: str, amount: float) -> dict[str, str]:
     """Reimburse the amount of money to the employee."""
     return {
@@ -26,7 +28,7 @@ def reimburse(purpose: str, amount: float) -> dict[str, str]:
     }
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def ask_for_approval(
     purpose: str, amount: float, tool_context: ToolContext
 ) -> dict[str, Any]:

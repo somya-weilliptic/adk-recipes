@@ -6,8 +6,10 @@ from google.adk.apps import App
 from google.adk.models.lite_llm import LiteLlm
 from google.adk.tools.function_tool import FunctionTool
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY, WEIL_SERVICE
 
-@weil_ai.secured_user("engg.acme")
+
+@weil_ai.secured_user(WEIL_SERVICE)
 def get_account_status(account_id: str) -> str:
     """Gets the status of a bank account.
 
@@ -20,7 +22,7 @@ def get_account_status(account_id: str) -> str:
     return f"Account {account_id} is active."
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def close_account(account_id: str) -> str:
     """Closes a bank account. This action requires user confirmation.
 
@@ -35,24 +37,24 @@ def close_account(account_id: str) -> str:
 
 info_agent = Agent(
     name="info_agent",
-    model=LiteLlm(model="openai/gpt-4o"),
+    model=LiteLlm(model=AGENT_MODEL),
     description="An agent that can check account status.",
     tools=[get_account_status],
 )
 
 close_agent = Agent(
     name="close_agent",
-    model=LiteLlm(model="openai/gpt-4o"),
+    model=LiteLlm(model=AGENT_MODEL),
     description="An agent that can close accounts.",
     tools=[FunctionTool(func=close_account, require_confirmation=True)],
 )
 
 
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="sub_agents",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         description=(
             "A root agent that can check accounts and close them by delegating to"
             " sub-agents."

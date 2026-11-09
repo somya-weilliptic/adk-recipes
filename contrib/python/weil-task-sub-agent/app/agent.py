@@ -7,6 +7,8 @@ from google.adk.models.lite_llm import LiteLlm
 from google.adk.tools.function_tool import FunctionTool
 from pydantic import BaseModel, Field
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY, WEIL_SERVICE
+
 
 class OrderItem(BaseModel):
     name: str = Field(description="Name of the food item ordered")
@@ -20,14 +22,14 @@ class PaymentInfo(BaseModel):
     cvv: str
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def place_order(orders: list[OrderItem], payment_info: PaymentInfo) -> str:
     """Mock an order placement operation."""
     total_items = sum(item.quantity for item in orders)
     return f"Successfully placed order for {total_items} items."
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def confirmation() -> str:
     """Confirm proceeding with the order."""
     return "Proceeding with order."
@@ -35,7 +37,7 @@ def confirmation() -> str:
 
 order_collector = Agent(
     name="order_collector",
-    model=LiteLlm(model="openai/gpt-4o"),
+    model=LiteLlm(model=AGENT_MODEL),
     mode="task",
     output_schema=list[OrderItem],
     instruction=(
@@ -55,7 +57,7 @@ Once you have their final order and confirmation if needed, finish your task.
 
 payment_collector = Agent(
     name="payment_collector",
-    model=LiteLlm(model="openai/gpt-4o"),
+    model=LiteLlm(model=AGENT_MODEL),
     mode="task",
     output_schema=PaymentInfo,
     instruction=(
@@ -69,11 +71,11 @@ Once you have both pieces of information, finish your task.
 )
 
 
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="coordinator",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         sub_agents=[order_collector, payment_collector],
         tools=[place_order],
         instruction="""\

@@ -24,6 +24,7 @@ from google.adk.apps import App
 from google.adk.labs.classifiers import LlmClassifier
 from google.adk.models.lite_llm import LiteLlm
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY, WEIL_SERVICE
 from app.tool_gate import create_tool_gate_callback
 
 _db = sqlite3.connect(":memory:", check_same_thread=False)
@@ -38,7 +39,7 @@ _db.executescript("""
 """)
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def run_sql(query: str) -> dict[str, Any]:
     """Runs one SQLite statement against the `customers` table.
 
@@ -56,7 +57,7 @@ def run_sql(query: str) -> dict[str, Any]:
     }
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def send_email(to: str, subject: str, body: str) -> dict[str, str]:
     """Sends an email to a customer."""
     return {"result": f"Sent {subject!r} to {to}."}
@@ -74,11 +75,11 @@ tool_gate = create_tool_gate_callback(
 )
 
 
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="customer_db_assistant",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         instruction=(
             "You help support staff look up and manage customers. Use `run_sql` to"
             " query or change the `customers` table, and `send_email` to email a"

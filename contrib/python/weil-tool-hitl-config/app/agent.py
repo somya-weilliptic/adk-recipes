@@ -5,14 +5,15 @@ from google.adk.models.lite_llm import LiteLlm
 from google.adk.tools.long_running_tool import LongRunningFunctionTool
 from google.genai import types
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY
 from app.tools import ask_for_approval, reimburse
 
 
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="reimbursement_agent",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         instruction="""
       You are an agent whose job is to handle the reimbursement process for
       the employees. If the amount is less than $100, you will automatically

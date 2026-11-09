@@ -21,8 +21,10 @@ from google.adk.models.lite_llm import LiteLlm
 from google.adk.tools.function_tool import FunctionTool
 from google.adk.tools.tool_context import ToolContext
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY, WEIL_SERVICE
 
-@weil_ai.secured_user("engg.acme")
+
+@weil_ai.secured_user(WEIL_SERVICE)
 def transfer_funds(
     amount: float, recipient: str, tool_context: ToolContext
 ) -> dict[str, str]:
@@ -45,7 +47,7 @@ def transfer_funds(
     return {"result": f"Successfully transferred ${amount} to {recipient}."}
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def close_account(account_id: str) -> dict[str, str]:
     """Closes a user account. This is a destructive action."""
     # With require_confirmation=True, this function is only called if the user
@@ -53,11 +55,11 @@ def close_account(account_id: str) -> dict[str, str]:
     return {"result": f"Account {account_id} closed successfully."}
 
 
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="money_transfer_assistant",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         tools=[
             transfer_funds,
             FunctionTool(func=close_account, require_confirmation=True),

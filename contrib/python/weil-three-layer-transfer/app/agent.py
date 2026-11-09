@@ -17,10 +17,12 @@ from google.adk.agents.llm_agent import Agent
 from google.adk.apps import App
 from google.adk.models.lite_llm import LiteLlm
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY
+
 # --- Leaf Agent (Grandchild) ---
 translator_agent = Agent(
     name="translator_agent",
-    model=LiteLlm(model="openai/gpt-4o"),
+    model=LiteLlm(model=AGENT_MODEL),
     description="Translates text into different languages.",
     instruction="""
       You are a translator. Your job is to translate the text provided to you into the requested language.
@@ -32,7 +34,7 @@ translator_agent = Agent(
 # --- Middle Agent (Child) ---
 writer_agent = Agent(
     name="writer_agent",
-    model=LiteLlm(model="openai/gpt-4o"),
+    model=LiteLlm(model=AGENT_MODEL),
     description=(
         "Writes stories, articles, or essays, and manages translation requests."
     ),
@@ -47,11 +49,11 @@ writer_agent = Agent(
 
 
 # --- Root Agent (Parent) ---
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="root_agent",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         description=(
             "Project coordinator that delegates writing and translation tasks."
         ),

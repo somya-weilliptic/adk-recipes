@@ -20,6 +20,8 @@ from google.adk.tools import request_input
 from google.genai import types
 from pydantic import BaseModel, Field
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY, WEIL_SERVICE
+
 
 class SupportTicket(BaseModel):
     """Details of the IT support ticket to be created."""
@@ -37,7 +39,7 @@ class SupportTicket(BaseModel):
     )
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def create_support_ticket(ticket: SupportTicket) -> dict[str, str]:
     """Create a support ticket in the IT ticketing system."""
     return {
@@ -50,11 +52,11 @@ def create_support_ticket(ticket: SupportTicket) -> dict[str, str]:
     }
 
 
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="support_assistant_agent",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         instruction="""
       You are a helpful IT support assistant responsible for creating support tickets.
       When the user requests to create or file a ticket:

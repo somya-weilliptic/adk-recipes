@@ -95,7 +95,38 @@ This recipe uses the [`weil-ai`](https://pypi.org/project/weil-ai/) package. Run
 
    Variables you must set: `WEIL_ADK_TEAM_AGENT_IDENTITY`, `OPENAI_API_KEY`, `GITHUB_TOKEN`. The other variables in the file have working defaults.
 
-3. `WEIL_ADK_TEAM_AGENT_IDENTITY` must be a real Weilliptic identity; the placeholder `weil_xxxx` is rejected at startup. See [Generate an agent identity](../weilliptic-integration/README.md#generate-an-agent-identity). `WEIL_ADK_TEAM_SERVICE` (default `engg.acme`) and `WEIL_ADK_TEAM_MODEL` (default `openai/gpt-5.1`) can be overridden; they are read in `app/config.py`.
+3. Put your values in `.env`. Only these need to change; leave the rest as they are:
+
+   ```dotenv
+   WEIL_ADK_TEAM_AGENT_IDENTITY=weil_<your-identity>
+   OPENAI_API_KEY=<your-openai-api-key>
+   GITHUB_TOKEN=<your-github-token>
+   ```
+
+   `WEIL_ADK_TEAM_AGENT_IDENTITY` must be a real Weilliptic identity; the placeholder `weil_xxxx` is rejected. `WEIL_ADK_TEAM_SERVICE` (default `engg.acme`) and `WEIL_ADK_TEAM_MODEL` (default `openai/gpt-5.1`) can be overridden; they are read in `app/config.py`.
+
+4. If your Sentinel node is not at the default address, also add its URL to `.env`:
+
+   ```dotenv
+   SENTINEL_HOST=<your-sentinel-url>
+   ```
+
+5. Enable the agent import. In `app/__init__.py`, uncomment `from . import agent` and add a noqa for E402:
+
+   ```python
+   load_dotenv()
+   from . import agent  # noqa: E402 -- must come after load_dotenv()
+   ```
+
+### Environment variables
+
+Set these in `.env`; everything else has a working default.
+
+| Variable | Description |
+| :-- | :-- |
+| `WEIL_ADK_TEAM_AGENT_IDENTITY` | Weilliptic identity of the agent (`weil_<token>`). |
+| `OPENAI_API_KEY` | OpenAI API key, read by LiteLLM for `openai/...` models. |
+| `GITHUB_TOKEN` | GitHub personal access token with `pull_requests:write` permission. |
 
 ### Run locally
 
@@ -115,15 +146,14 @@ uv run python -m app.main
 
 ```bash
 docker build -t weil-adk-pr-triaging-agent .
-docker run --rm --env-file .env -p 8080:8080 weil-adk-pr-triaging-agent
+grep -vE '^\s*(#|$)|<TODO' .env | sed -E 's/[[:space:]]+#.*$//' > .env.docker
+docker run --rm --env-file .env.docker -p 8080:8080 weil-adk-pr-triaging-agent
 ```
 
-The image serves the app on port 8080 (`/list-apps` lists it). Credentials are never copied into the image; they come from `--env-file` at run time.
+Open <http://localhost:8080/dev-ui/> and pick `app`. `.env.docker` is `.env` without comments (Docker's `--env-file` does not strip them) and is git-ignored. Credentials are never copied into the image; they come from `--env-file` at run time.
 
 One-off jobs use the same image with a different command:
 
 ```bash
-docker run --rm --env-file .env weil-adk-pr-triaging-agent uv run python -m app.main
+docker run --rm --env-file .env.docker weil-adk-pr-triaging-agent uv run python -m app.main
 ```
-
-See the [Weilliptic integration guide](../weilliptic-integration/README.md) for how the security hooks work.

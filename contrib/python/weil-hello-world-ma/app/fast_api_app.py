@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import contextlib
+import logging
 import os
 from collections.abc import AsyncIterator
 
@@ -30,6 +31,8 @@ from app.app_utils.reasoning_engine_adapter import (
 )
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 # Cloud telemetry needs Application Default Credentials. Resolve them here
 # rather than letting get_fast_api_app raise DefaultCredentialsError at
@@ -51,8 +54,19 @@ AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    from app.agent import app as adk_app
-    from app.agent import root_agent
+    try:
+        from app.agent import app as adk_app
+        from app.agent import root_agent
+    except Exception:
+        # The agent's Weil wallet is fetched from Sentinel at import time. If
+        # that fails (placeholder identity, Sentinel unreachable) keep serving
+        # the API and web UI; the error resurfaces when the agent is used.
+        logger.exception(
+            "Agent failed to load (check the Weil identity env vars and "
+            "SENTINEL_HOST). Serving without A2A routes."
+        )
+        yield
+        return
 
     runner = Runner(
         app=adk_app,

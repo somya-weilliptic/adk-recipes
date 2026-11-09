@@ -22,8 +22,10 @@ from google.adk.tools.long_running_tool import LongRunningFunctionTool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
 
+from app.config import AGENT_MODEL, WEIL_AGENT_IDENTITY, WEIL_SERVICE
 
-@weil_ai.secured_user("engg.acme")
+
+@weil_ai.secured_user(WEIL_SERVICE)
 def reimburse(purpose: str, amount: float) -> dict[str, str]:
     """Reimburse the amount of money to the employee."""
     return {
@@ -31,7 +33,7 @@ def reimburse(purpose: str, amount: float) -> dict[str, str]:
     }
 
 
-@weil_ai.secured_user("engg.acme")
+@weil_ai.secured_user(WEIL_SERVICE)
 def ask_for_approval(
     purpose: str, amount: float, tool_context: ToolContext
 ) -> dict[str, Any]:
@@ -43,11 +45,11 @@ def ask_for_approval(
     }
 
 
-@weil_ai.agent(identity="weil_xxxx", verify=False)
+@weil_ai.agent(identity=WEIL_AGENT_IDENTITY, verify=False)
 def create_root_agent() -> Agent:
     return Agent(
         name="reimbursement_agent",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         instruction="""
       You are an agent whose job is to handle the reimbursement process for
       the employees. If the amount is less than $100, you will automatically

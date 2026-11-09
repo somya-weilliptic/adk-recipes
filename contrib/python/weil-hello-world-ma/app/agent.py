@@ -15,6 +15,10 @@ ROLL_AGENT_IDENTITY = os.getenv("ROLL_AGENT_IDENTITY", "weil_xxxx")
 PRIME_AGENT_IDENTITY = os.getenv("PRIME_AGENT_IDENTITY", "weil_xxxx")
 ROOT_AGENT_IDENTITY = os.getenv("ROOT_AGENT_IDENTITY", "weil_xxxx")
 
+WEIL_IT_SERVICE = os.getenv("WEIL_IT_SERVICE", "it.acme")
+WEIL_HR_SERVICE = os.getenv("WEIL_HR_SERVICE", "hr.acme")
+AGENT_MODEL = os.getenv("AGENT_MODEL", "openai/gpt-4o")
+
 
 # --- Roll Die Sub-Agent ---
 @weil_ai.secured_user("it.acme")
@@ -30,7 +34,7 @@ def create_roll_agent() -> Agent:
     return Agent(
         name="roll_agent",
         mode="single_turn",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         description="Handles rolling dice of different sizes.",
         instruction="""
         You are responsible for rolling dice based on the user's request.
@@ -122,7 +126,7 @@ def create_prime_agent() -> Agent:
     return Agent(
         name="prime_agent",
         mode="single_turn",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         description="Handles checking if numbers are prime.",
         instruction="""
         You are responsible for checking whether numbers are prime.
@@ -149,7 +153,7 @@ weil_prime_agent = create_prime_agent()
 def create_root_agent() -> Agent:
     return Agent(
         name="root_agent",
-        model=LiteLlm(model="openai/gpt-4o"),
+        model=LiteLlm(model=AGENT_MODEL),
         instruction="""
         You are a helpful assistant that can roll dice and check if numbers are prime.
         You delegate rolling dice tasks to the roll_agent and prime checking tasks to the prime_agent.
